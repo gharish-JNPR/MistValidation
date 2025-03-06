@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MistValidation</string>
+    <string name="production_aws">PRODUCTION-AWS</string>
+    <string name="staging_aws">STAGING-AWS</string>
+    <string name="eu_aws">EU-AWS</string>
+    <string name="production_gcp">PRODUCTION-GCP</string>
+    <string name="staging_gcp">STAGING-GCP</string>
+    <string name="aws_east">AWS-EAST</string>
+    <string name="prod_gcp_canada">PRODUCTION-GCP-CANADA</string>
+    <string name="prod_aws_gov">PRODUCTION-AWS-GOV</string>
+    <string name="stag_aws_gov">STAGING-AWS-GOV</string>
+    <string name="prod_au">PRODUCTION-AU</string>
+    <string name="prod_gcp_uk">PRODUCTION-GCP-UK</string>
+    <string name="canary_us">CANARY-US</string>
+    <string name="prod_aws_uae">PRODUCTION-AWS-UAE</string>
+    <string name="prod_gcp_central">PRODUCTION-GCP-CENTRAL</string>
+    <string name="enroll_org">Enroll Org</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="scan_qr_code">Scan a QR Code</string>
+</resources>
