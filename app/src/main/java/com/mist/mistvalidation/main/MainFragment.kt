@@ -329,7 +329,7 @@ class MainFragment : Fragment() {
 
     private fun createOrgList(orgName: String, envType: String) {
 
-        if (envType.equals("P", ignoreCase = true)) {
+        if (envType == "P") {
             if (SharedPrefsUtils.readString(requireContext(),"PROD_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -340,7 +340,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_LIST", Gson().toJson(prodOrgList))
                 prodOrgAdapter.setOrdNames(prodOrgList)
             }
-        } else if(envType.equals("S", ignoreCase = true)){
+        } else if(envType == "S"){
             if (SharedPrefsUtils.readString(requireContext(),"STAG_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -351,7 +351,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"STAG_LIST", Gson().toJson(stagOrgList))
                 stagOrgAdapter.setOrdNames(stagOrgList)
             }
-        } else if(envType.equals("E", ignoreCase = true)){
+        } else if(envType == "E"){
             if (SharedPrefsUtils.readString(requireContext(),"EU_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -362,7 +362,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"EU_LIST", Gson().toJson(euOrgList))
                 euOrgAdapter.setOrdNames(euOrgList)
             }
-        } else if(envType.equals("g", ignoreCase = true)){
+        } else if(envType == "g"){
             if (SharedPrefsUtils.readString(requireContext(),"STAG_GCP_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -373,7 +373,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"STAG_GCP_LIST", Gson().toJson(stagGcpOrgList))
                 stagGcpOrgAdapter.setOrdNames(stagGcpOrgList)
             }
-        } else if(envType.equals("G", ignoreCase = true)){
+        } else if(envType == "G"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -384,7 +384,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_LIST", Gson().toJson(prodGcpOrgList))
                 stagGcpOrgAdapter.setOrdNames(prodGcpOrgList)
             }
-        } else if(envType.equals("M", ignoreCase = true)){
+        } else if(envType == "M"){
             if (SharedPrefsUtils.readString(requireContext(),"AWS_EAST_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -395,7 +395,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"AWS_EAST_LIST", Gson().toJson(awsEastOrgList))
                 awsEastOrgAdapter.setOrdNames(awsEastOrgList)
             }
-        } else if(envType.equals("C", ignoreCase = true)){
+        } else if(envType == "C"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CANADA_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -406,7 +406,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_CANADA_LIST", Gson().toJson(prodGcpCanadaOrgList))
                 prodGcpCanadaOrgAdapter.setOrdNames(prodGcpCanadaOrgList)
             }
-        } else if(envType.equals("F", ignoreCase = true)){
+        } else if(envType == "F"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_AWS_GOV_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -417,7 +417,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_AWS_GOV_LIST", Gson().toJson(prodAwsGovOrgList))
                 prodAwsGovOrgAdapter.setOrdNames(prodAwsGovOrgList)
             }
-        } else if(envType.equals("f", ignoreCase = true)){
+        } else if(envType == "f"){
             if (SharedPrefsUtils.readString(requireContext(),"STAG_AWS_GOV_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -428,7 +428,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"STAG_AWS_GOV_LIST", Gson().toJson(stagAwsGovOrgList))
                 stagAwsGovOrgAdapter.setOrdNames(stagAwsGovOrgList)
             }
-        } else if(envType.equals("A", ignoreCase = true)){
+        } else if(envType == "A"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_AU_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -439,7 +439,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_AU_LIST", Gson().toJson(prodAuOrgList))
                 prodAuOrgAdapter.setOrdNames(prodAuOrgList)
             }
-        } else if(envType.equals("c", ignoreCase = true)){
+        } else if(envType == "c"){
             if (SharedPrefsUtils.readString(requireContext(),"CANARY_US_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -450,7 +450,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"CANARY_US_LIST", Gson().toJson(canaryUSOrgList))
                 canaryUsOrgAdapter.setOrdNames(canaryUSOrgList)
             }
-        } else if(envType.equals("U", ignoreCase = true)){
+        } else if(envType == "U"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_UK_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -461,7 +461,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_UK_LIST", Gson().toJson(prodGcpUkOrgList))
                 prodGcpUkOrgAdapter.setOrdNames(prodGcpUkOrgList)
             }
-        } else if(envType.equals("Y", ignoreCase = true)){
+        } else if(envType == "Y"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_AWS_UAE_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
@@ -472,7 +472,7 @@ class MainFragment : Fragment() {
                 SharedPrefsUtils.writeString(requireContext(),"PROD_AWS_UAE_LIST", Gson().toJson(prodAwsUaeOrgList))
                 prodAwsUaeOrgAdapter.setOrdNames(prodAwsUaeOrgList)
             }
-        } else if(envType.equals("W", ignoreCase = true)){
+        } else if(envType == "W"){
             if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CENTRAL_LIST")?.let {
                     checkForDuplicates(it, orgName)
                 } == true) {
