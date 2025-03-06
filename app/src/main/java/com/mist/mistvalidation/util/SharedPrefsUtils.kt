@@ -16,16 +16,16 @@ class SharedPrefsUtils {
                 )
             }
         }
-        fun getPreferences(context: Context?): SharedPreferences {
+        private fun getPreferences(context: Context?): SharedPreferences {
             return preferences
         }
-        fun readString(context: Context?, key: String?): String? {
+        fun readString(context: Context?,key: String?): String? {
             return getPreferences(context).getString(key, "")
         }
-        fun writeString(context: Context?, key: String?, value: String?) {
-            SharedPrefsUtils.getEditor(context).putString(key, value).apply()
+        fun writeString(context: Context?,key: String?, value: String?) {
+            getEditor(context).putString(key, value).apply()
         }
-        fun getEditor(context: Context?): SharedPreferences.Editor {
+        private fun getEditor(context: Context?): SharedPreferences.Editor {
             return getPreferences(context).edit()
         }
     }
