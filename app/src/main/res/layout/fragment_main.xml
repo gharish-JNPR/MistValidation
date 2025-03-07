@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".main.MainActivity">
 
@@ -378,7 +378,7 @@
             android:paddingRight="50dp"
             android:text="@string/enroll_org"
             android:textAllCaps="false"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <TextView

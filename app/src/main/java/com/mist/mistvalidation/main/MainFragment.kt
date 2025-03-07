@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
@@ -19,12 +21,13 @@ import com.mist.android.IndoorLocationManager.getInstance
 import com.mist.android.MistMap
 import com.mist.android.MistPoint
 import com.mist.mistvalidation.databinding.FragmentMainBinding
-import com.mist.mistvalidation.util.SharedPrefsUtils
 import com.mist.mistvalidation.util.Utils
+import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 
 class MainFragment : Fragment() {
+    private val viewModel: MainFragmentViewModel by viewModels()
 
     private var invitationSecret: String? = null
 
@@ -61,6 +64,21 @@ class MainFragment : Fragment() {
     private val prodAwsUaeOrgAdapter: OrgAdapter = OrgAdapter()
     private val prodGcpCentralOrgAdapter: OrgAdapter = OrgAdapter()
 
+    private var prodList: String? = ""
+    private var stagList: String? = ""
+    private var euList: String? = ""
+    private var prodGcpList: String? = ""
+    private var stagGcpList: String? = ""
+    private var awsEastList: String? = ""
+    private var prodGcpCanadaList: String? = ""
+    private var prodAwsGovList: String? = ""
+    private var stagAwsGovList: String? = ""
+    private var prodAuList: String? = ""
+    private var canaryUsList: String? = ""
+    private var prodGcpUkList: String? = ""
+    private var prodAwsUaeList: String? = ""
+    private var prodGcpCentralList: String? = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,122 +97,124 @@ class MainFragment : Fragment() {
     }
 
     private fun initViews() {
-        //SharedPrefsUtils.writeString(activity, "PROD_LIST", Gson().toJson(prodOrgList))
-        val prodList = SharedPrefsUtils.readString(requireContext(),"PROD_LIST")
-        val stagList = SharedPrefsUtils.readString(requireContext(),"STAG_LIST")
-        val euList = SharedPrefsUtils.readString(requireContext(),"EU_LIST")
-        val prodGcpList = SharedPrefsUtils.readString(requireContext(),"PROD_GCP_LIST")
-        val stagGcpList = SharedPrefsUtils.readString(requireContext(),"STAG_GCP_LIST")
-        val awsEastList = SharedPrefsUtils.readString(requireContext(),"AWS_EAST_LIST")
-        val prodGcpCanadaList = SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CANADA_LIST")
-        val prodAwsGovList = SharedPrefsUtils.readString(requireContext(),"PROD_AWS_GOV_LIST")
-        val stagAwsGovList = SharedPrefsUtils.readString(requireContext(),"STAG_AWS_GOV_LIST")
-        val prodAuList = SharedPrefsUtils.readString(requireContext(),"PROD_AU_LIST")
-        val canaryUsList = SharedPrefsUtils.readString(requireContext(),"CANARY_US_LIST")
-        val prodGcpUkList = SharedPrefsUtils.readString(requireContext(),"PROD_GCP_UK_LIST")
-        val prodAwsUaeList = SharedPrefsUtils.readString(requireContext(),"PROD_AWS_UAE_LIST")
-        val prodGcpCentralList = SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CENTRAL_LIST")
+        lifecycleScope.launch {
+            prodList = viewModel.getList("PROD_LIST") ?: ""
+            stagList = viewModel.getList("STAG_LIST") ?: ""
+            euList = viewModel.getList("EU_LIST") ?: ""
+            prodGcpList = viewModel.getList("PROD_GCP_LIST") ?: ""
+            stagGcpList = viewModel.getList("STAG_GCP_LIST") ?: ""
+            awsEastList = viewModel.getList("AWS_EAST_LIST") ?: ""
+            prodGcpCanadaList = viewModel.getList("PROD_GCP_CANADA_LIST") ?: ""
+            prodAwsGovList = viewModel.getList("PROD_AWS_GOV_LIST") ?: ""
+            stagAwsGovList = viewModel.getList("STAG_AWS_GOV_LIST") ?: ""
+            prodAuList = viewModel.getList("PROD_AU_LIST") ?: ""
+            canaryUsList = viewModel.getList("CANARY_US_LIST") ?: ""
+            prodGcpUkList = viewModel.getList("PROD_GCP_UK_LIST") ?: ""
+            prodAwsUaeList = viewModel.getList("PROD_AWS_UAE_LIST") ?: ""
+            prodGcpCentralList = viewModel.getList("PROD_GCP_CENTRAL_LIST") ?: ""
 
-
-        if (!prodList.isNullOrEmpty() && Utils.getListFromString(prodList) != null) {
+            updateUi()
+            setUpAdapters()
+        }
+    }
+    private fun updateUi(){
+        if (prodList!="") {
             binding.txtProd.visibility = View.VISIBLE
             prodOrgList = Utils.getListFromString(prodList)
         } else {
             binding.txtProd.visibility = View.GONE
         }
 
-        if (!stagList.isNullOrEmpty() && Utils.getListFromString(stagList) != null) {
+        if (stagList!="") {
             binding.txtStag.visibility = View.VISIBLE
             stagOrgList = Utils.getListFromString(stagList)
         } else {
             binding.txtStag.visibility = View.GONE
         }
 
-        if (!euList.isNullOrEmpty() && Utils.getListFromString(euList) != null) {
+        if (euList!="") {
             binding.txtEu.visibility = View.VISIBLE
             euOrgList = Utils.getListFromString(euList)
         } else {
             binding.txtEu.visibility = View.GONE
         }
 
-        if (!prodGcpList.isNullOrEmpty() && Utils.getListFromString(prodGcpList) != null) {
+        if (prodGcpList!="") {
             binding.txtGcpProd.visibility = View.VISIBLE
             prodGcpOrgList = Utils.getListFromString(prodGcpList)
         } else {
             binding.txtGcpProd.visibility = View.GONE
         }
 
-        if (!stagGcpList.isNullOrEmpty() && Utils.getListFromString(stagGcpList) != null) {
+        if (stagGcpList!="") {
             binding.txtGcpStag.visibility = View.VISIBLE
             stagGcpOrgList = Utils.getListFromString(stagGcpList)
         } else {
             binding.txtGcpStag.visibility = View.GONE
         }
 
-        if (!awsEastList.isNullOrEmpty() && Utils.getListFromString(awsEastList) != null) {
+        if (awsEastList!="") {
             binding.txtAwsEast.visibility = View.VISIBLE
             awsEastOrgList = Utils.getListFromString(awsEastList)
         } else {
             binding.txtAwsEast.visibility = View.GONE
         }
 
-        if (!prodGcpCanadaList.isNullOrEmpty() && Utils.getListFromString(prodGcpCanadaList) != null) {
+        if (prodGcpCanadaList!="") {
             binding.txtGcpProdCanada.visibility = View.VISIBLE
             prodGcpCanadaOrgList = Utils.getListFromString(prodGcpCanadaList)
         } else {
             binding.txtGcpProdCanada.visibility = View.GONE
         }
 
-        if (!prodAwsGovList.isNullOrEmpty() && Utils.getListFromString(prodAwsGovList) != null) {
+        if (prodAwsGovList!="") {
             binding.txtAwsGovProd.visibility = View.VISIBLE
             prodAwsGovOrgList = Utils.getListFromString(prodAwsGovList)
         } else {
             binding.txtAwsGovProd.visibility = View.GONE
         }
 
-        if (!stagAwsGovList.isNullOrEmpty() && Utils.getListFromString(stagAwsGovList) != null) {
+        if (stagAwsGovList!="") {
             binding.txtAwsGovStag.visibility = View.VISIBLE
             stagAwsGovOrgList = Utils.getListFromString(stagAwsGovList)
         } else {
             binding.txtAwsGovStag.visibility = View.GONE
         }
 
-        if (!prodAuList.isNullOrEmpty() && Utils.getListFromString(prodAuList) != null) {
+        if (prodAuList!="") {
             binding.txtAuProd.visibility = View.VISIBLE
             prodAuOrgList = Utils.getListFromString(prodAuList)
         } else {
             binding.txtAuProd.visibility = View.GONE
         }
 
-        if (!canaryUsList.isNullOrEmpty() && Utils.getListFromString(canaryUsList) != null) {
+        if (canaryUsList!="") {
             binding.txtCanaryUs.visibility = View.VISIBLE
             canaryUSOrgList = Utils.getListFromString(canaryUsList)
         } else {
             binding.txtCanaryUs.visibility = View.GONE
         }
 
-        if (!prodGcpUkList.isNullOrEmpty() && Utils.getListFromString(prodGcpUkList) != null) {
+        if (prodGcpUkList!="") {
             binding.txtUkGcpProd.visibility = View.VISIBLE
             prodGcpUkOrgList = Utils.getListFromString(prodGcpUkList)
         } else {
             binding.txtUkGcpProd.visibility = View.GONE
         }
 
-        if (!prodAwsUaeList.isNullOrEmpty() && Utils.getListFromString(prodAwsUaeList) != null) {
+        if (prodAwsUaeList!="") {
             binding.txtAwsUaeProd.visibility = View.VISIBLE
             prodAwsUaeOrgList = Utils.getListFromString(prodAwsUaeList)
         } else {
             binding.txtAwsUaeProd.visibility = View.GONE
         }
 
-        if (!prodGcpCentralList.isNullOrEmpty() && Utils.getListFromString(prodGcpCentralList) != null) {
+        if (prodGcpCentralList!="") {
             binding.txtGcpCentralProd.visibility = View.VISIBLE
             prodGcpCentralOrgList = Utils.getListFromString(prodGcpCentralList)
         } else {
             binding.txtGcpCentralProd.visibility = View.GONE
         }
-
-        setUpAdapters()
     }
 
     private fun setUpAdapters() {
@@ -278,8 +298,8 @@ class MainFragment : Fragment() {
                     //scan result gives us the text which is embedded in the QR code.
                     val contents = data.getStringExtra("SCAN_RESULT")
                     //this is a regular expression which is used for extract the last part of in the URL
-                    val pattern = Pattern.compile("^http[s]?:\\/\\/.*\\/(.+)")
-
+                    val pattern = Pattern.compile("^https?://.*/(.+)")
+                    //val pattern = Pattern.compile("^http[s]?:\\/\\/.*\\/(.+)")
                     val matcher = pattern.matcher(contents ?: "")
 
                     var secret = ""
@@ -330,158 +350,200 @@ class MainFragment : Fragment() {
     private fun createOrgList(orgName: String, envType: String) {
 
         if (envType == "P") {
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodOrgList.isEmpty()) {
-                    binding.txtProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodList = viewModel.getList("PROD_LIST") ?: ""
+                if (prodList=="" || checkForDuplicates(prodList!!, orgName)) {
+                    if (prodOrgList.isEmpty()) {
+                        binding.txtProd.visibility = View.VISIBLE
+                    }
+                    prodOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_LIST",Gson().toJson(prodOrgList))
+                    }
+                    prodOrgAdapter.setOrdNames(prodOrgList)
                 }
-                prodOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_LIST", Gson().toJson(prodOrgList))
-                prodOrgAdapter.setOrdNames(prodOrgList)
             }
         } else if(envType == "S"){
-            if (SharedPrefsUtils.readString(requireContext(),"STAG_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (stagOrgList.isEmpty()) {
-                    binding.txtStag.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                stagList = viewModel.getList("STAG_LIST") ?: ""
+                if (stagList=="" || checkForDuplicates(stagList!!, orgName)) {
+                    if (stagOrgList.isEmpty()) {
+                        binding.txtStag.visibility = View.VISIBLE
+                    }
+                    stagOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("STAG_LIST",Gson().toJson(stagOrgList))
+                    }
+                    stagOrgAdapter.setOrdNames(stagOrgList)
                 }
-                stagOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"STAG_LIST", Gson().toJson(stagOrgList))
-                stagOrgAdapter.setOrdNames(stagOrgList)
             }
         } else if(envType == "E"){
-            if (SharedPrefsUtils.readString(requireContext(),"EU_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (euOrgList.isEmpty()) {
-                    binding.txtEu.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                euList = viewModel.getList("EU_LIST") ?: ""
+                if (euList=="" || checkForDuplicates(euList!!, orgName)) {
+                    if (euOrgList.isEmpty()) {
+                        binding.txtEu.visibility = View.VISIBLE
+                    }
+                    euOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("EU_LIST",Gson().toJson(euOrgList))
+                    }
+                    euOrgAdapter.setOrdNames(euOrgList)
                 }
-                euOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"EU_LIST", Gson().toJson(euOrgList))
-                euOrgAdapter.setOrdNames(euOrgList)
             }
         } else if(envType == "g"){
-            if (SharedPrefsUtils.readString(requireContext(),"STAG_GCP_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (stagGcpOrgList.isEmpty()) {
-                    binding.txtGcpStag.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                stagGcpList = viewModel.getList("STAG_GCP_LIST") ?: ""
+                if (stagGcpList=="" || checkForDuplicates(stagGcpList!!, orgName)) {
+                    if (stagGcpOrgList.isEmpty()) {
+                        binding.txtGcpStag.visibility = View.VISIBLE
+                    }
+                    stagGcpOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("STAG_GCP_LIST",Gson().toJson(stagGcpOrgList))
+                    }
+                    stagGcpOrgAdapter.setOrdNames(stagGcpOrgList)
                 }
-                stagGcpOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"STAG_GCP_LIST", Gson().toJson(stagGcpOrgList))
-                stagGcpOrgAdapter.setOrdNames(stagGcpOrgList)
             }
         } else if(envType == "G"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodGcpOrgList.isEmpty()) {
-                    binding.txtGcpProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodGcpList = viewModel.getList("PROD_GCP_LIST") ?: ""
+                if (prodGcpList=="" || checkForDuplicates(prodGcpList!!, orgName)) {
+                    if (prodGcpOrgList.isEmpty()) {
+                        binding.txtGcpProd.visibility = View.VISIBLE
+                    }
+                    prodGcpOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_GCP_LIST",Gson().toJson(prodGcpOrgList))
+                    }
+                    prodGcpOrgAdapter.setOrdNames(prodGcpOrgList)
                 }
-                prodGcpOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_LIST", Gson().toJson(prodGcpOrgList))
-                stagGcpOrgAdapter.setOrdNames(prodGcpOrgList)
             }
         } else if(envType == "M"){
-            if (SharedPrefsUtils.readString(requireContext(),"AWS_EAST_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (awsEastOrgList.isEmpty()) {
-                    binding.txtAwsEast.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                awsEastList = viewModel.getList("AWS_EAST_LIST") ?: ""
+                if (awsEastList=="" || checkForDuplicates(awsEastList!!, orgName)) {
+                    if (awsEastOrgList.isEmpty()) {
+                        binding.txtAwsEast.visibility = View.VISIBLE
+                    }
+                    awsEastOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("AWS_EAST_LIST",Gson().toJson(awsEastOrgList))
+                    }
+                    awsEastOrgAdapter.setOrdNames(awsEastOrgList)
                 }
-                awsEastOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"AWS_EAST_LIST", Gson().toJson(awsEastOrgList))
-                awsEastOrgAdapter.setOrdNames(awsEastOrgList)
             }
         } else if(envType == "C"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CANADA_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodGcpCanadaOrgList.isEmpty()) {
-                    binding.txtGcpProdCanada.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodGcpCanadaList = viewModel.getList("PROD_GCP_CANADA_LIST") ?: ""
+                if (prodGcpCanadaList=="" || checkForDuplicates(prodGcpCanadaList!!, orgName)) {
+                    if (prodGcpCanadaOrgList.isEmpty()) {
+                        binding.txtGcpProdCanada.visibility = View.VISIBLE
+                    }
+                    prodGcpCanadaOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_GCP_CANADA_LIST",Gson().toJson(prodGcpCanadaOrgList))
+                    }
+                    prodGcpCanadaOrgAdapter.setOrdNames(prodGcpCanadaOrgList)
                 }
-                prodGcpCanadaOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_CANADA_LIST", Gson().toJson(prodGcpCanadaOrgList))
-                prodGcpCanadaOrgAdapter.setOrdNames(prodGcpCanadaOrgList)
             }
         } else if(envType == "F"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_AWS_GOV_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodAwsGovOrgList.isEmpty()) {
-                    binding.txtAwsGovProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodAwsGovList = viewModel.getList("PROD_AWS_GOV_LIST") ?: ""
+                if (prodAwsGovList=="" || checkForDuplicates(prodAwsGovList!!, orgName)) {
+                    if (prodAwsGovOrgList.isEmpty()) {
+                        binding.txtAwsGovProd.visibility = View.VISIBLE
+                    }
+                    prodAwsGovOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_AWS_GOV_LIST",Gson().toJson(prodAwsGovOrgList))
+                    }
+                    prodAwsGovOrgAdapter.setOrdNames(prodAwsGovOrgList)
                 }
-                prodAwsGovOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_AWS_GOV_LIST", Gson().toJson(prodAwsGovOrgList))
-                prodAwsGovOrgAdapter.setOrdNames(prodAwsGovOrgList)
             }
         } else if(envType == "f"){
-            if (SharedPrefsUtils.readString(requireContext(),"STAG_AWS_GOV_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (stagAwsGovOrgList.isEmpty()) {
-                    binding.txtAwsGovStag.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                stagAwsGovList = viewModel.getList("STAG_AWS_GOV_LIST") ?: ""
+                if (stagAwsGovList=="" || checkForDuplicates(stagAwsGovList!!, orgName)) {
+                    if (stagAwsGovOrgList.isEmpty()) {
+                        binding.txtAwsGovStag.visibility = View.VISIBLE
+                    }
+                    stagAwsGovOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("STAG_AWS_GOV_LIST",Gson().toJson(stagAwsGovOrgList))
+                    }
+                    stagAwsGovOrgAdapter.setOrdNames(stagAwsGovOrgList)
                 }
-                stagAwsGovOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"STAG_AWS_GOV_LIST", Gson().toJson(stagAwsGovOrgList))
-                stagAwsGovOrgAdapter.setOrdNames(stagAwsGovOrgList)
             }
         } else if(envType == "A"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_AU_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodAuOrgList.isEmpty()) {
-                    binding.txtAuProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodAuList = viewModel.getList("PROD_AU_LIST") ?: ""
+                if (prodAuList=="" || checkForDuplicates(prodAuList!!, orgName)) {
+                    if (prodAuOrgList.isEmpty()) {
+                        binding.txtAuProd.visibility = View.VISIBLE
+                    }
+                    prodAuOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_AU_LIST",Gson().toJson(prodAuOrgList))
+                    }
+                    prodAuOrgAdapter.setOrdNames(prodAuOrgList)
                 }
-                prodAuOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_AU_LIST", Gson().toJson(prodAuOrgList))
-                prodAuOrgAdapter.setOrdNames(prodAuOrgList)
             }
         } else if(envType == "c"){
-            if (SharedPrefsUtils.readString(requireContext(),"CANARY_US_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (canaryUSOrgList.isEmpty()) {
-                    binding.txtCanaryUs.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                canaryUsList = viewModel.getList("CANARY_US_LIST") ?: ""
+                if (canaryUsList=="" || checkForDuplicates(canaryUsList!!, orgName)) {
+                    if (canaryUSOrgList.isEmpty()) {
+                        binding.txtCanaryUs.visibility = View.VISIBLE
+                    }
+                    canaryUSOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("CANARY_US_LIST",Gson().toJson(canaryUSOrgList))
+                    }
+                    canaryUsOrgAdapter.setOrdNames(canaryUSOrgList)
                 }
-                canaryUSOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"CANARY_US_LIST", Gson().toJson(canaryUSOrgList))
-                canaryUsOrgAdapter.setOrdNames(canaryUSOrgList)
             }
         } else if(envType == "U"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_UK_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodGcpUkOrgList.isEmpty()) {
-                    binding.txtUkGcpProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodGcpUkList = viewModel.getList("PROD_GCP_UK_LIST") ?: ""
+                if (prodGcpUkList=="" || checkForDuplicates(prodGcpUkList!!, orgName)) {
+                    if (prodGcpUkOrgList.isEmpty()) {
+                        binding.txtUkGcpProd.visibility = View.VISIBLE
+                    }
+                    prodGcpUkOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_GCP_UK_LIST",Gson().toJson(prodGcpUkOrgList))
+                    }
+                    prodGcpUkOrgAdapter.setOrdNames(prodGcpUkOrgList)
                 }
-                prodGcpUkOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_UK_LIST", Gson().toJson(prodGcpUkOrgList))
-                prodGcpUkOrgAdapter.setOrdNames(prodGcpUkOrgList)
             }
         } else if(envType == "Y"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_AWS_UAE_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodAwsUaeOrgList.isEmpty()) {
-                    binding.txtAwsUaeProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodAwsUaeList = viewModel.getList("PROD_AWS_UAE_LIST") ?: ""
+                if (prodAwsUaeList=="" || checkForDuplicates(prodAwsUaeList!!, orgName)) {
+                    if (prodAwsUaeOrgList.isEmpty()) {
+                        binding.txtAwsUaeProd.visibility = View.VISIBLE
+                    }
+                    prodAwsUaeOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_AWS_UAE_LIST",Gson().toJson(prodAwsUaeOrgList))
+                    }
+                    prodAwsUaeOrgAdapter.setOrdNames(prodAwsUaeOrgList)
                 }
-                prodAwsUaeOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_AWS_UAE_LIST", Gson().toJson(prodAwsUaeOrgList))
-                prodAwsUaeOrgAdapter.setOrdNames(prodAwsUaeOrgList)
             }
         } else if(envType == "W"){
-            if (SharedPrefsUtils.readString(requireContext(),"PROD_GCP_CENTRAL_LIST")?.let {
-                    checkForDuplicates(it, orgName)
-                } == true) {
-                if (prodGcpCentralOrgList.isEmpty()) {
-                    binding.txtGcpCentralProd.visibility = View.VISIBLE
+            lifecycleScope.launch {
+                prodGcpCentralList = viewModel.getList("PROD_GCP_CENTRAL_LIST") ?: ""
+                if (prodGcpCentralList=="" || checkForDuplicates(prodGcpCentralList!!, orgName)) {
+                    if (prodGcpCentralOrgList.isEmpty()) {
+                        binding.txtGcpCentralProd.visibility = View.VISIBLE
+                    }
+                    prodGcpCentralOrgList.add(orgName)
+                    lifecycleScope.launch {
+                        viewModel.putList("PROD_GCP_CENTRAL_LIST",Gson().toJson(prodGcpCentralOrgList))
+                    }
+                    prodGcpCentralOrgAdapter.setOrdNames(prodGcpCentralOrgList)
                 }
-                prodGcpCentralOrgList.add(orgName)
-                SharedPrefsUtils.writeString(requireContext(),"PROD_GCP_CENTRAL_LIST", Gson().toJson(prodGcpCentralOrgList))
-                prodGcpCentralOrgAdapter.setOrdNames(prodGcpCentralOrgList)
             }
         }
     }

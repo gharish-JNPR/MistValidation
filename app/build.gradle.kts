@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
 }
 
 android {
@@ -44,6 +45,11 @@ dependencies {
     implementation (libs.zxing.android.embedded)
 
     implementation (libs.core.sdk)
+
+    //Room database
+    implementation (libs.androidx.room.runtime)
+    ksp (libs.androidx.room.compiler)
+    implementation (libs.androidx.room.ktx)
 
 
     implementation (libs.androidx.fragment.ktx)
